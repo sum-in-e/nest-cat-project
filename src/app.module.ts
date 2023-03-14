@@ -11,12 +11,7 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
   imports: [
     CatsModule,
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGODB_URI, {
-      // useNewUrlParser: true,
-      // useUnifiedTopology: true,
-      // useCreateIndex: true, // * MongoDB에서 인덱싱을 하겠다는 의미
-      // useFindAndModify: false,
-    }),
+    MongooseModule.forRoot(process.env.MONGODB_URI),
   ],
   controllers: [AppController],
   providers: [AppService],
