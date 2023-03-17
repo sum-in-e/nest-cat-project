@@ -1,21 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Cat } from './cats.schema';
 import { CatRequestDto } from './dto/cats.request.dto';
 import * as bcrypt from 'bcrypt';
+import { CatsRepository } from './cats.repository';
 
 @Injectable()
 export class CatsService {
-  // * Cat 스키마를 사용할 수 있도록 만들기
-  // * 1. CatsService에서 catModel이라는 이름으로 Cat 스키마를 사용할 수 있도록 @InjectModel() decorator를 사용하여 주입해준다.
-  // * 2. Cat Module의 imports에 스키마를 import 해준다.
-  constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {} // * Cat.name은 이런식으로 들어가게 몽구스가 만들어짐.
+  // * Repository 레이어로 DB에 접근할 것이기 때문에 기존 로직은 삭제
+  // constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
+  // * DB 로직을 작성한 CatsRepository를 의존성 주입
+  constructor(private readonly catsRepository: CatsRepository) {}
 
   // * 회원가입 비즈니스 로직
   async signUp(body: CatRequestDto) {
     const { email, password, name } = body;
-    const isCatExist = await this.catModel.exists({ email }); // * 해당 DB에서 email과 일치하는 필드가 존재하나 체크
+    const isCatExist = await this.catsRepository.existByEmail(email);
 
     // * 1. 데이터 유효성 검사
     if (isCatExist) {
@@ -28,7 +26,7 @@ export class CatsService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // * 3. DB에 저장하기 -> 쿼리 사용해야함. 스키마를 서비스 안에서 사용하려면 의존성 주입을 해줘야한다.
-    const cat = await this.catModel.create({
+    const cat = await this.catsRepository.createByEmail({
       email,
       name,
       password: hashedPassword,
