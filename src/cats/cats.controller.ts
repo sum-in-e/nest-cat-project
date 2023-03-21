@@ -4,13 +4,17 @@ import {
   Get,
   Post,
   UseFilters,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginRequestDto } from 'src/auth/dto/login.request.dto';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
+import { Cat } from './cats.schema';
 import { CatsService } from './cats.service';
 import { ReadOnlyCatDto } from './dto/cat.dto';
 import { CatRequestDto } from './dto/cats.request.dto';
@@ -24,10 +28,11 @@ export class CatsController {
     private readonly authService: AuthService,
   ) {}
 
-  @ApiOperation({ summary: '고양이 가져오기' })
+  @ApiOperation({ summary: '현재 고양이 가져오기' })
+  @UseGuards(JwtAuthGuard) // * middleware -> guard 순으로 실행될 떄 guard에서 인증 처리를 해준다
   @Get()
-  getCurrentCat() {
-    return 'current cat';
+  getCurrentCat(@CurrentUser() cat: Cat) {
+    return cat.readOnlyData; // * virtual filed로 만든 readOnlyData로 클라이언트에 필요한 정보만 response로 주게 해놔서 이를 사용
   }
 
   @ApiResponse({
