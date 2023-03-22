@@ -45,7 +45,7 @@ export class CatsController {
     type: ReadOnlyCatDto,
   })
   @ApiOperation({ summary: '회원가입' })
-  @Post('signup')
+  @Post()
   //* @Body를 이용해서 client에서 보내는 body 값을 가져올 수 있다.
   async signUp(@Body() body: CatRequestDto) {
     //* 받아올 body에 대한 validation 필요하다 -> 클라이언트가 body로 보낸 데이터를 DTO 객체로 만들어서 validation하고 타입핑 검사한 후에 DTO 객체를 Controller -> Service -> DB로 안전하게 보낸다.

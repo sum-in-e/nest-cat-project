@@ -1,4 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { CatsModule } from 'src/cats/cats.module';
@@ -7,6 +8,7 @@ import { JwtStrategy } from './jwt/jwt.strategy';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(), // * 환경변수를 사용하려면 설정 필요
     // * PassportModule.register에서는 만들 strategy에 대하여 기본 설정을 할 수 있다.
     // * strategy가 validate를 실행하도록 하기 위해서는 기본 설정을 해줘야한다.
     // * session 쿠키는 사용하지 않을 것이기 때문에 false 처리
@@ -15,7 +17,7 @@ import { JwtStrategy } from './jwt/jwt.strategy';
     // * JwtModule.register는 로그인 시 쓰이는 것. JwtService를 authSevice에 의존성 주입하기 위해서는 반드시 필요하다.
     // * JWT를 만들어준다.
     JwtModule.register({
-      secret: 'secret', // * jwt.strategy의 secretKey와 동일하게 설정해야한다.
+      secret: process.env.JWT_SECRET, // * jwt.strategy의 secretKey와 동일하게 설정해야한다.
       signOptions: { expiresIn: '1y' }, // * 만료기간 1년
     }),
     forwardRef(() => CatsModule),
