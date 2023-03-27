@@ -3,21 +3,24 @@ import {
   Controller,
   Get,
   Post,
+  UploadedFiles,
   UseFilters,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginRequestDto } from 'src/auth/dto/login.request.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { multerOptions } from 'src/common/utils/multer.options';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
-import { Cat } from './cats.schema';
-import { CatsService } from './cats.service';
-import { ReadOnlyCatDto } from './dto/cat.dto';
-import { CatRequestDto } from './dto/cats.request.dto';
+import { Cat } from '../cats.schema';
+import { ReadOnlyCatDto } from '../dto/cat.dto';
+import { CatRequestDto } from '../dto/cats.request.dto';
+import { CatsService } from '../services/cats.service';
 
 @UseInterceptors(SuccessInterceptor)
 @UseFilters(HttpExceptionFilter)
@@ -63,15 +66,15 @@ export class CatsController {
     return this.authService.jwtLogIn(body);
   }
 
-  @ApiOperation({ summary: '로그아웃' })
-  @Post('logout')
-  logOut() {
-    return 'log out';
-  }
-
   @ApiOperation({ summary: '고양이 업로드' })
-  @Post('upload/cats')
-  uploadCatImg() {
-    return 'uploadImg';
+  @Post('upload')
+  @UseInterceptors(FilesInterceptor('image', 10, multerOptions('cats'))) // * 첫 번째 인자: file 받을 때 쓸 필드명, 두 번째 인자 options
+  @UseGuards(JwtAuthGuard)
+  uploadCatImg(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @CurrentUser() cat: Cat,
+  ) {
+    // * JWT token으로 디코딩해서 현재 유저를 가져와 uploadImg 서비스 함수에 현재 로그인된 cat을 전달한다.
+    return this.catsService.uploadImg(cat, files);
   }
 }

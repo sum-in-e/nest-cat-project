@@ -46,7 +46,10 @@ export class Cat extends Document {
   @IsNotEmpty()
   password: string;
 
-  @Prop()
+  @Prop({
+    default:
+      'https://github.com/amamov/teaching-nestjs-a-to-z/blob/main/images/1.jpeg?raw=true', // * default 설정
+  })
   @IsString()
   imgUrl: string;
 
@@ -55,6 +58,7 @@ export class Cat extends Document {
     id: string;
     email: string;
     name: string;
+    imgUrl: string;
   };
 }
 
@@ -69,5 +73,6 @@ CatSchema.virtual('readOnlyData').get(function (this: Cat) {
     id: this.id,
     email: this.email,
     name: this.name,
+    imgUrl: this.imgUrl,
   };
 });

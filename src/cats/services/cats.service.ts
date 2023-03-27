@@ -1,7 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CatRequestDto } from './dto/cats.request.dto';
 import * as bcrypt from 'bcrypt';
-import { CatsRepository } from './cats.repository';
+import { CatsRepository } from 'src/cats/cats.repository';
+import { Cat } from 'src/cats/cats.schema';
+import { CatRequestDto } from 'src/cats/dto/cats.request.dto';
 
 @Injectable()
 export class CatsService {
@@ -37,5 +38,19 @@ export class CatsService {
 
     // * 작업 결과를 Controller에 Return한다.
     return cat.readOnlyData; // * DB에 저장한 cat이 아닌 스키마에 만든 virtual field인 readOnlyData를 return
+  }
+
+  // * 이미지 업로드 비즈니스 로직
+  async uploadImg(cat: Cat, files: Express.Multer.File[]) {
+    const fileName = `cats/${files[0].filename}`;
+
+    console.log(fileName);
+
+    const newCat = await this.catsRepository.findByIdAndUpdateImg(
+      cat.id,
+      fileName,
+    );
+    console.log(newCat);
+    return newCat;
   }
 }

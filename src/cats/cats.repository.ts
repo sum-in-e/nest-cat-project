@@ -28,4 +28,14 @@ export class CatsRepository {
     const cat = await this.catModel.findById(id).select('-password'); // * select -> 원하는 필드를 고를 수 있는데 -를 붙이면 해당 필드를 제외하고 가져온다. email과 name을 가져오고 싶으면 select('email name') 으로 가져온다
     return cat;
   }
+
+  async findByIdAndUpdateImg(id: string, fileName: string) {
+    const cat = await this.catModel.findById(id);
+
+    cat.imgUrl = `http://localhost:8080/media/${fileName}`;
+
+    const newCat = await cat.save(); // * 업데이트된것을 저장
+    console.log('newCat', newCat);
+    return newCat.readOnlyData;
+  }
 }

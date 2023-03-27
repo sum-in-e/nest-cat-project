@@ -4,9 +4,12 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as expressBasicAuth from 'express-basic-auth';
+import * as path from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // * 제네릭으로 <NestExpressApplication>을 추가해줘야 app이 확실하게  ExpressApp이 된다. 그래야 ExpressApp을 통해 static 파일들을 제공할 수 있다.
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.use(
@@ -18,6 +21,11 @@ async function bootstrap() {
       },
     }),
   );
+
+  // http://localhost:8000/media/cats/aaa.png 와 같은 경로로 serving 받을 수 있게 된다.
+  app.useStaticAssets(path.join(__dirname, './common', 'uploads'), {
+    prefix: '/media',
+  });
 
   const config = new DocumentBuilder()
     .setTitle('The cats API Document')

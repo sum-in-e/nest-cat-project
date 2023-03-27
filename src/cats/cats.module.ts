@@ -1,16 +1,20 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { MulterModule } from '@nestjs/platform-express';
 import { AuthModule } from 'src/auth/auth.module';
-import { CatsController } from './cats.controller';
-import { CatsRepository } from './cats.repository';
-import { Cat, CatSchema } from './cats.schema';
-import { CatsService } from './cats.service';
+import { CatsRepository } from 'src/cats/cats.repository';
+import { Cat, CatSchema } from 'src/cats/cats.schema';
+import { CatsController } from 'src/cats/controllers/cats.controller';
+import { CatsService } from 'src/cats/services/cats.service';
 
 @Module({
   imports: [
+    MulterModule.register({
+      dest: './upload', // * 파일을 저장할 디렉토리 설정
+    }),
     CatsModule,
-    forwardRef(() => AuthModule),
     MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]),
+    forwardRef(() => AuthModule),
   ],
   controllers: [CatsController],
   providers: [CatsService, CatsRepository],
