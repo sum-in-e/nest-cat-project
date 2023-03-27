@@ -1,3 +1,4 @@
+import { HttpModule, HttpService } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
@@ -15,6 +16,7 @@ import { CatsService } from 'src/cats/services/cats.service';
     CatsModule,
     MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]),
     forwardRef(() => AuthModule),
+    HttpModule,
   ],
   controllers: [CatsController],
   providers: [CatsService, CatsRepository],

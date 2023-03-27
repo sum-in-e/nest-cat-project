@@ -77,4 +77,10 @@ export class CatsController {
     // * JWT token으로 디코딩해서 현재 유저를 가져와 uploadImg 서비스 함수에 현재 로그인된 cat을 전달한다.
     return this.catsService.uploadImg(cat, files);
   }
+
+  @ApiOperation({ summary: '모든 고양이 가져오기' })
+  @Get('all')
+  getAllCat() {
+    return this.catsService.getAllCat();
+  }
 }
