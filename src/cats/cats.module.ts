@@ -7,6 +7,7 @@ import { CatsRepository } from 'src/cats/cats.repository';
 import { Cat, CatSchema } from 'src/cats/cats.schema';
 import { CatsController } from 'src/cats/controllers/cats.controller';
 import { CatsService } from 'src/cats/services/cats.service';
+import { Comments, CommentsSchema } from 'src/comments/comments.schema';
 
 @Module({
   imports: [
@@ -14,7 +15,10 @@ import { CatsService } from 'src/cats/services/cats.service';
       dest: './upload', // * 파일을 저장할 디렉토리 설정
     }),
     CatsModule,
-    MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]),
+    MongooseModule.forFeature([
+      { name: Cat.name, schema: CatSchema },
+      { name: Comments.name, schema: CommentsSchema },
+    ]),
     forwardRef(() => AuthModule),
     HttpModule,
   ],
